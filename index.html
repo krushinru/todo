@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script defer src="app.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="current-tab-title">Today</span>
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+            <div id="tab-today" class="active" onclick="switchTab('today')">Today</div>
+            <div id="tab-backlog" onclick="switchTab('backlog')">Backlog</div>
+            <div id="tab-done" onclick="switchTab('done')">Done</div>
+        </div>
+
+        <!-- Task list -->
+        <div id="task-list" class="task-list"></div>
+
+        <!-- Task details -->
+        <div id="task-details" class="task-details hidden">
+            <h2 id="task-title-view"></h2>
+            <p id="task-description-text"></p>
+            <button class="button" onclick="closeTaskDetails()">Back</button>
+            <button class="button" onclick="enableTaskEditing()">Edit</button>
+        </div>
+
+        <!-- Task editor -->
+        <div id="task-editor" class="task-editor hidden">
+            <h2 id="editor-title">New Task</h2>
+            <input type="text" id="task-title-input" placeholder="Task Title">
+            <textarea id="task-description-input" placeholder="Description"></textarea>
+            <button class="button" onclick="closeTaskEditor()">Back</button>
+            <button class="button" onclick="saveTask()">Create Task</button>
+        </div>
+
+        <!-- Button to add a new task -->
+        <button id="task-add-button" class="button" onclick="openTaskEditor()">Add New Task</button>
+    </div>
+</body>
+</html>
