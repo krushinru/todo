@@ -160,7 +160,7 @@ function saveTask() {
 }
 
 function toggleTaskCompletion(index) {
-    tasks[index].category = tasks[index].category === 'done' ? 'today' : 'done';
+    tasks[index].category = 'done';
     saveTasks();
     displayTasks();
 }
