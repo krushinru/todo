@@ -32,8 +32,9 @@ function loadTasks() {
 }
 
 function saveTasks() {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-    window.Telegram.WebApp.CloudStorage.setItem('tasks', JSON.stringify(tasks), (error, success) => {
+    const tasksString = JSON.stringify(tasks);
+    localStorage.setItem('tasks', tasksString);
+    window.Telegram.WebApp.CloudStorage.setItem('tasks', tasksString, (error, success) => {
         if (error) {
             console.error('Failed to save tasks to Telegram CloudStorage');
         }
