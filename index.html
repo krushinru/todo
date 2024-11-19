@@ -8,144 +8,144 @@
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
     <script>
         let tasks = [];
-        let currentTab = 'today';
-        let editTaskIndex = null;
+let currentTab = 'today';
+let editTaskIndex = null;
 
-        document.addEventListener("DOMContentLoaded", () => {
-            window.Telegram.WebApp.ready().then(() => {
-                loadTasks();
-            });
-        });
+document.addEventListener("DOMContentLoaded", () => {
+    const tg = window.Telegram.WebApp;
 
-        function loadTasks() {
-            const localTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-            tasks = localTasks;
-            window.Telegram.WebApp.CloudStorage.getItem('tasks').then(cloudTasks => {
-                if (cloudTasks) {
-                    tasks = JSON.parse(cloudTasks);
-                    localStorage.setItem('tasks', JSON.stringify(tasks));
-                }
-                displayTasks();
-            }).catch(() => {
-                displayTasks();
-            });
-            alert( localStorage.tasks );
-        }
+    tg.ready().then(() => {
+        loadTasks();
+    });
+});
 
-        function saveTasks() {
+function loadTasks() {
+    const localTasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks = localTasks;
+    window.Telegram.WebApp.CloudStorage.getItem('tasks', (error, cloudTasks) => {
+        if (!error && cloudTasks) {
+            tasks = JSON.parse(cloudTasks);
             localStorage.setItem('tasks', JSON.stringify(tasks));
-            window.Telegram.WebApp.CloudStorage.setItem({ 'tasks': JSON.stringify(tasks) }).catch(() => {
-                console.error('Failed to save tasks to Telegram CloudStorage');
-            });
         }
+        displayTasks();
+    });
+}
 
-        function switchTab(tab) {
-            currentTab = tab;
-            document.getElementById('current-tab-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
-            document.querySelectorAll('.tab-bar div').forEach(el => el.classList.remove('active'));
-            document.getElementById('tab-' + tab).classList.add('active');
-            displayTasks();
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    window.Telegram.WebApp.CloudStorage.setItem('tasks', JSON.stringify(tasks), (error, success) => {
+        if (error) {
+            console.error('Failed to save tasks to Telegram CloudStorage');
         }
+    });
+}
 
-        function openTaskEditor(isEdit = false) {
-            document.getElementById('task-editor').classList.remove('hidden');
-            document.getElementById('task-add-button').classList.add('hidden');
-            document.getElementById('task-list').classList.add('hidden');
-            document.getElementById('task-details').classList.add('hidden');
-            document.getElementById('editor-title').innerText = isEdit ? 'Edit Task' : 'New Task';
+function switchTab(tab) {
+    currentTab = tab;
+    document.getElementById('current-tab-title').innerText = tab.charAt(0).toUpperCase() + tab.slice(1);
+    document.querySelectorAll('.tab-bar div').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    displayTasks();
+}
 
-            if (!isEdit) {
-                document.getElementById('task-title-input').value = '';
-                document.getElementById('task-description-input').value = '';
-            }
-        }
+function openTaskEditor(isEdit = false) {
+    document.getElementById('task-editor').classList.remove('hidden');
+    document.getElementById('task-add-button').classList.add('hidden');
+    document.getElementById('task-list').classList.add('hidden');
+    document.getElementById('task-details').classList.add('hidden');
+    document.getElementById('editor-title').innerText = isEdit ? 'Edit Task' : 'New Task';
 
-        function closeTaskEditor() {
-            document.getElementById('task-editor').classList.add('hidden');
-            document.getElementById('task-list').classList.remove('hidden');
-            document.getElementById('task-add-button').classList.remove('hidden');
-        }
+    if (!isEdit) {
+        document.getElementById('task-title-input').value = '';
+        document.getElementById('task-description-input').value = '';
+    }
+}
 
-        function displayTasks() {
-            const taskList = document.getElementById('task-list');
-            taskList.innerHTML = '';
-            tasks.filter(task => task.category === currentTab).forEach((task, index) => {
-                const taskDiv = document.createElement('div');
-                taskDiv.className = 'task-item';
+function closeTaskEditor() {
+    document.getElementById('task-editor').classList.add('hidden');
+    document.getElementById('task-list').classList.remove('hidden');
+    document.getElementById('task-add-button').classList.remove('hidden');
+}
 
-                taskDiv.innerHTML = `
-                    <span class="task-text" onclick="openTaskDetails(${index})">${task.title}</span>
-                    <div class="task-actions">
-                        <button onclick="toggleTaskCompletion(${index})">done</button>
-                        <button onclick="moveToBacklog(${index})">backlog</button>
-                        <button onclick="deleteTask(${index})">delete</button>
-                    </div>
-                `;
-                taskList.appendChild(taskDiv);
-            });
-        }
+function displayTasks() {
+    const taskList = document.getElementById('task-list');
+    taskList.innerHTML = '';
+    tasks.filter(task => task.category === currentTab).forEach((task, index) => {
+        const taskDiv = document.createElement('div');
+        taskDiv.className = 'task-item';
 
-        function openTaskDetails(index) {
-            editTaskIndex = index;
-            const task = tasks[index];
+        taskDiv.innerHTML = `
+            <span class="task-text" onclick="openTaskDetails(${index})">${task.title}</span>
+            <div class="task-actions">
+                <button onclick="toggleTaskCompletion(${index})">done</button>
+                <button onclick="moveToBacklog(${index})">backlog</button>
+                <button onclick="deleteTask(${index})">delete</button>
+            </div>
+        `;
+        taskList.appendChild(taskDiv);
+    });
+}
 
-            document.getElementById('task-title-view').innerText = task.title;
-            document.getElementById('task-description-text').innerText = task.description || 'No description available.';
-            document.getElementById('task-details').classList.remove('hidden');
-            document.getElementById('task-list').classList.add('hidden');
-        }
+function openTaskDetails(index) {
+    editTaskIndex = index;
+    const task = tasks[index];
 
-        function closeTaskDetails() {
-            document.getElementById('task-details').classList.add('hidden');
-            document.getElementById('task-list').classList.remove('hidden');
-        }
+    document.getElementById('task-title-view').innerText = task.title;
+    document.getElementById('task-description-text').innerText = task.description || 'No description available.';
+    document.getElementById('task-details').classList.remove('hidden');
+    document.getElementById('task-list').classList.add('hidden');
+}
 
-        function enableTaskEditing() {
-            const task = tasks[editTaskIndex];
-            document.getElementById('task-title-input').value = task.title;
-            document.getElementById('task-description-input').value = task.description || '';
-            openTaskEditor(true);
-        }
+function closeTaskDetails() {
+    document.getElementById('task-details').classList.add('hidden');
+    document.getElementById('task-list').classList.remove('hidden');
+}
 
-        function saveTask() {
-            const title = document.getElementById('task-title-input').value;
-            const description = document.getElementById('task-description-input').value;
+function enableTaskEditing() {
+    const task = tasks[editTaskIndex];
+    document.getElementById('task-title-input').value = task.title;
+    document.getElementById('task-description-input').value = task.description || '';
+    openTaskEditor(true);
+}
 
-            if (!title) {
-                alert('Please enter a task title.');
-                return;
-            }
+function saveTask() {
+    const title = document.getElementById('task-title-input').value;
+    const description = document.getElementById('task-description-input').value;
 
-            if (editTaskIndex !== null) {
-                tasks[editTaskIndex] = { title, description, category: currentTab };
-                editTaskIndex = null;
-            } else {
-                tasks.push({ title, description, category: currentTab });
-            }
+    if (!title) {
+        alert('Please enter a task title.');
+        return;
+    }
 
-            saveTasks();
-            closeTaskEditor();
-            displayTasks();
-        }
+    if (editTaskIndex !== null) {
+        tasks[editTaskIndex] = { title, description, category: currentTab };
+        editTaskIndex = null;
+    } else {
+        tasks.push({ title, description, category: currentTab });
+    }
 
-        function toggleTaskCompletion(index) {
-            tasks[index].category = tasks[index].category === 'done' ? 'today' : 'done';
-            saveTasks();
-            displayTasks();
-        }
+    saveTasks();
+    closeTaskEditor();
+    displayTasks();
+}
 
-        function moveToBacklog(index) {
-            tasks[index].category = 'backlog';
-            saveTasks();
-            displayTasks();
-        }
+function toggleTaskCompletion(index) {
+    tasks[index].category = tasks[index].category === 'done' ? 'today' : 'done';
+    saveTasks();
+    displayTasks();
+}
 
-        function deleteTask(index) {
-            tasks.splice(index, 1);
-            saveTasks();
-            displayTasks();
-        }
+function moveToBacklog(index) {
+    tasks[index].category = 'backlog';
+    saveTasks();
+    displayTasks();
+}
 
+function deleteTask(index) {
+    tasks.splice(index, 1);
+    saveTasks();
+    displayTasks();
+}
     </script>
 </head>
 <body>
