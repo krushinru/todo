@@ -54,20 +54,17 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 function loadTasks() {
-    const localTasks = JSON.parse(localStorage.getItem('tasks')) || [];
-    tasks = localTasks;
     window.Telegram.WebApp.CloudStorage.getItem('tasks', (error, cloudTasks) => {
         if (!error && cloudTasks) {
             tasks = JSON.parse(cloudTasks);
-            localStorage.setItem('tasks', JSON.stringify(tasks));
         }
         displayTasks();
     });
 }
 
 function saveTasks() {
-    const tasksString = JSON.stringify(tasks);
-    localStorage.setItem('tasks', tasksString);
+    let tasksString = JSON.stringify(tasks);
+    //localStorage.setItem('tasks', tasksString);
     window.Telegram.WebApp.CloudStorage.setItem('tasks', tasksString, (error, success) => {
         if (error) {
             console.error('Failed to save tasks to Telegram CloudStorage');
