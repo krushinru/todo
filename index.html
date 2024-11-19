@@ -12,9 +12,7 @@ let currentTab = 'today';
 let editTaskIndex = null;
 
 document.addEventListener("DOMContentLoaded", () => {
-    const tg = window.Telegram.WebApp;
-
-    tg.ready().then(() => {
+    window.Telegram.WebApp.ready().then(() => {
         loadTasks();
     });
 });
