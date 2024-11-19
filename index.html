@@ -6,7 +6,43 @@
     <title>Task Manager</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
-    <script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <span id="current-tab-title">Today</span>
+        </div>
+
+        <!-- Tab bar -->
+        <div class="tab-bar">
+            <div id="tab-today" class="active" onclick="switchTab('today')">Today</div>
+            <div id="tab-backlog" onclick="switchTab('backlog')">Backlog</div>
+            <div id="tab-done" onclick="switchTab('done')">Done</div>
+        </div>
+
+        <!-- Task list -->
+        <div id="task-list" class="task-list"></div>
+
+        <!-- Task details -->
+        <div id="task-details" class="task-details hidden">
+            <h2 id="task-title-view"></h2>
+            <p id="task-description-text"></p>
+            <button class="button" onclick="closeTaskDetails()">Back</button>
+            <button class="button" onclick="enableTaskEditing()">Edit</button>
+        </div>
+
+        <!-- Task editor -->
+        <div id="task-editor" class="task-editor hidden">
+            <input type="text" id="task-title-input" placeholder="New Task">
+            <textarea id="task-description-input" placeholder="Description"></textarea>
+            <button class="button" onclick="closeTaskEditor()">Back</button>
+            <button class="button" onclick="saveTask()">Save Task</button>
+        </div>
+
+        <!-- Button to add a new task -->
+        <button id="task-add-button" class="button" onclick="openTaskEditor()">New Task</button>
+    </div>
+        <script>
         let tasks = [];
 let currentTab = 'today';
 let editTaskIndex = null;
@@ -146,41 +182,5 @@ function deleteTask(index) {
     displayTasks();
 }
     </script>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <span id="current-tab-title">Today</span>
-        </div>
-
-        <!-- Tab bar -->
-        <div class="tab-bar">
-            <div id="tab-today" class="active" onclick="switchTab('today')">Today</div>
-            <div id="tab-backlog" onclick="switchTab('backlog')">Backlog</div>
-            <div id="tab-done" onclick="switchTab('done')">Done</div>
-        </div>
-
-        <!-- Task list -->
-        <div id="task-list" class="task-list"></div>
-
-        <!-- Task details -->
-        <div id="task-details" class="task-details hidden">
-            <h2 id="task-title-view"></h2>
-            <p id="task-description-text"></p>
-            <button class="button" onclick="closeTaskDetails()">Back</button>
-            <button class="button" onclick="enableTaskEditing()">Edit</button>
-        </div>
-
-        <!-- Task editor -->
-        <div id="task-editor" class="task-editor hidden">
-            <input type="text" id="task-title-input" placeholder="New Task">
-            <textarea id="task-description-input" placeholder="Description"></textarea>
-            <button class="button" onclick="closeTaskEditor()">Back</button>
-            <button class="button" onclick="saveTask()">Save Task</button>
-        </div>
-
-        <!-- Button to add a new task -->
-        <button id="task-add-button" class="button" onclick="openTaskEditor()">New Task</button>
-    </div>
 </body>
 </html>
