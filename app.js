@@ -64,7 +64,6 @@ function displayTasks() {
             <div class="task-actions">
                 <button onclick="toggleTaskCompletion(${index})">done</button>
                 <button onclick="moveToBacklog(${index})">backlog</button>
-                <button onclick="viewTask(${index})">view</button>
                 <button onclick="deleteTask(${index})">delete</button>
             </div>
         `;
@@ -97,6 +96,11 @@ function enableTaskEditing() {
 function saveTask() {
     const title = document.getElementById('task-title-input').value;
     const description = document.getElementById('task-description-input').value;
+
+    if (!title) {
+        alert('Please enter a task title.');
+        return;
+    }
 
     if (editTaskIndex !== null) {
         tasks[editTaskIndex] = { title, description, category: currentTab };
